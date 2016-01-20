@@ -134,13 +134,18 @@ type ListOptions struct {
 // NewClient returns a new GitLab API client. If a nil httpClient is
 // provided, http.DefaultClient will be used. To use API methods which require
 // authentication, provide a valid private token.
-func NewClient(httpClient *http.Client, token string) *Client {
+func NewClient(httpClient *http.Client, host string, token string) *Client {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
 
 	c := &Client{client: httpClient, token: token, UserAgent: userAgent}
-	if err := c.SetBaseURL(defaultBaseURL); err != nil {
+
+	baseGitlabURL := defaultBaseURL
+	if host != "" {
+		baseGitlabURL = host
+	}
+	if err := c.SetBaseURL(baseGitlabURL); err != nil {
 		// should never happen since defaultBaseURL is our constant
 		panic(err)
 	}
