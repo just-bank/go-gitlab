@@ -18,7 +18,6 @@ package gitlab
 
 import (
 	"fmt"
-	"log"
 	"net/url"
 	"strings"
 	"time"
@@ -174,11 +173,11 @@ func (s *IssuesService) GetIssue(pid interface{}, issue int) (*Issue, *Response,
 //
 // GitLab API docs: http://doc.gitlab.com/ce/api/issues.html#new-issues
 type CreateIssueOptions struct {
-	Title       string   `url:"title,omitempty" json:"title,omitempty"`
-	Description string   `url:"description,omitempty" json:"description,omitempty"`
-	AssigneeID  int      `url:"assignee_id,omitempty" json:"assignee_id,omitempty"`
-	MilestoneID int      `url:"milestone_id,omitempty" json:"milestone_id,omitempty"`
-	Labels      []string `url:"labels,omitempty" json:"labels,omitempty"`
+	Title       string `url:"title,omitempty" json:"title,omitempty"`
+	Description string `url:"description,omitempty" json:"description,omitempty"`
+	AssigneeID  int    `url:"assignee_id,omitempty" json:"assignee_id,omitempty"`
+	MilestoneID int    `url:"milestone_id,omitempty" json:"milestone_id,omitempty"`
+	Labels      string `url:"labels,omitempty" json:"labels,omitempty"`
 }
 
 // CreateIssue creates a new project issue.
@@ -194,14 +193,12 @@ func (s *IssuesService) CreateIssue(
 	u := fmt.Sprintf("projects/%s/issues", url.QueryEscape(project))
 
 	// This is needed to get a single, comma separated string
-	opt.Labels = []string{strings.Join(opt.Labels, ",")}
+	//opt.Labels = []string{strings.Join(opt.Labels, ",")}
 
 	req, err := s.client.NewRequest("POST", u, opt)
 	if err != nil {
 		return nil, nil, err
 	}
-
-	log.Printf("req: %#+v\n", req.URL)
 
 	i := new(Issue)
 	resp, err := s.client.Do(req, i)
